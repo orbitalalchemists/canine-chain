@@ -16,7 +16,7 @@ import (
 
 	abci "github.com/tendermint/tendermint/abci/types"
 
-	"github.com/cosmos/cosmos-sdk/simapp"
+	"github.com/jackalLabs/canine-chain/v5/app/simhelpers"
 	"github.com/tendermint/tendermint/libs/log"
 )
 

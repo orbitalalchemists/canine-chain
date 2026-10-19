@@ -8,8 +8,8 @@ import (
 	"github.com/tendermint/tendermint/libs/log"
 	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
 
-	"github.com/cosmos/cosmos-sdk/simapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/jackalLabs/canine-chain/v5/app/simhelpers"
 	"github.com/jackalLabs/canine-chain/v5/x/jklmint/types"
 	dbm "github.com/tendermint/tm-db"
 

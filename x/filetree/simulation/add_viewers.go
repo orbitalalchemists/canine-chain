@@ -8,10 +8,10 @@ import (
 	eciesgo "github.com/ecies/go/v2"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	simappparams "github.com/jackalLabs/canine-chain/v5/app/params"
 	"github.com/jackalLabs/canine-chain/v5/x/filetree/keeper"
 	"github.com/jackalLabs/canine-chain/v5/x/filetree/types"
 )

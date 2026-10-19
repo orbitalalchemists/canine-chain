@@ -4,11 +4,11 @@ import (
 	"math/rand"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
-	simappparams "github.com/cosmos/cosmos-sdk/simapp/params"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	simappparams "github.com/jackalLabs/canine-chain/v5/app/params"
 
 	//	"github.com/jackalLabs/canine-chain/testutil/sample"
 	oraclesimulation "github.com/jackalLabs/canine-chain/v5/x/oracle/simulation"
