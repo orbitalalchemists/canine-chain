@@ -3,11 +3,11 @@ package keeper_test
 import (
 	"time"
 
+	"github.com/cometbft/cometbft/libs/rand"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	testutil "github.com/jackalLabs/canine-chain/v5/testutil"
 	jklminttypes "github.com/jackalLabs/canine-chain/v5/x/jklmint/types"
 	"github.com/jackalLabs/canine-chain/v5/x/storage/types"
-	"github.com/tendermint/tendermint/libs/rand"
 )
 
 func (suite *KeeperTestSuite) TestDecimals() {

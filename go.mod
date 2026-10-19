@@ -22,7 +22,6 @@ require (
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.4
 	github.com/syndtr/goleveldb v1.0.1-0.20210819022825-2ae1ddf74ef7 // indirect
-	github.com/tendermint/tendermint v0.34.27
 	github.com/tendermint/tm-db v0.6.7
 	github.com/zondax/hid v0.9.2 // indirect
 	google.golang.org/genproto v0.0.0-20230320184635-7606e756e683
@@ -170,7 +169,6 @@ require (
 replace (
 	// use cosmos keyring
 	github.com/99designs/keyring => github.com/cosmos/keyring v1.2.0
-
 
 	//github.com/cosmos/cosmos-sdk => ../cosmos-sdk
 

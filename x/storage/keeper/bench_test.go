@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtime "github.com/cometbft/cometbft/types/time"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
@@ -17,8 +19,6 @@ import (
 	"github.com/jackalLabs/canine-chain/v5/x/storage/keeper"
 	storagetestutil "github.com/jackalLabs/canine-chain/v5/x/storage/testutil"
 	"github.com/jackalLabs/canine-chain/v5/x/storage/types"
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
 )
 
 // benchKeeper builds a storage keeper with a DB-backed KVStore so the benchmark
@@ -163,7 +163,7 @@ func seedRewardTrackers(tb testing.TB, k *keeper.Keeper, ctx sdk.Context, provid
 // EndBlocker walk at the target scales from the audit intake (hundreds of
 // thousands of files)?
 //
-//   go test -run=^$ -bench=BenchmarkManageProofs -benchtime=1x -benchmem ./x/storage/keeper/
+//	go test -run=^$ -bench=BenchmarkManageProofs -benchtime=1x -benchmem ./x/storage/keeper/
 func BenchmarkManageProofs(b *testing.B) {
 	cases := []struct {
 		files, providers, maxProofs int

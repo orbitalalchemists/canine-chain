@@ -19,10 +19,10 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
+	"github.com/cometbft/cometbft/libs/rand"
 	"github.com/cosmos/cosmos-sdk/client/input"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/pflag"
-	"github.com/tendermint/tendermint/libs/rand"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/tx"

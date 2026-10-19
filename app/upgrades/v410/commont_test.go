@@ -13,12 +13,12 @@ import (
 	storagetestutil "github.com/jackalLabs/canine-chain/v5/x/storage/testutil"
 	storagemoduletypes "github.com/jackalLabs/canine-chain/v5/x/storage/types"
 
+	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	tmtime "github.com/cometbft/cometbft/types/time"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	typesparams "github.com/cosmos/cosmos-sdk/x/params/types"
 	canineglobaltestutil "github.com/jackalLabs/canine-chain/v5/testutil"
 	moduletestutil "github.com/jackalLabs/canine-chain/v5/types/module/testutil" // when importing from sdk,'go mod tidy' keeps trying to import from v0.46.
-	tmproto "github.com/tendermint/tendermint/proto/tendermint/types"
-	tmtime "github.com/tendermint/tendermint/types/time"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
