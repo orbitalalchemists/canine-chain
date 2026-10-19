@@ -5,9 +5,9 @@ go 1.23
 toolchain go1.23.1
 
 require (
-	github.com/CosmWasm/wasmd v0.32.0
+	github.com/CosmWasm/wasmd v0.46.0
 	github.com/CosmWasm/wasmvm v1.2.6
-	github.com/cosmos/cosmos-sdk v0.45.17
+	github.com/cosmos/cosmos-sdk v0.47.8
 	github.com/cosmos/ibc-go/v4 v4.6.0
 	github.com/ecies/go/v2 v2.0.6
 	github.com/gogo/protobuf v1.3.3
@@ -79,12 +79,14 @@ require (
 	github.com/cockroachdb/pebble v1.0.0 // indirect
 	github.com/cockroachdb/redact v1.1.3 // indirect
 	github.com/coinbase/rosetta-sdk-go v0.7.9 // indirect
+	github.com/cometbft/cometbft v0.37.4
 	github.com/cometbft/cometbft-db v0.7.0 // indirect
 	github.com/confio/ics23/go v0.9.1 // indirect
 	github.com/cosmos/btcutil v1.0.4
 	github.com/cosmos/cosmos-db v0.0.0-20221226095112-f3c38ecb5e32 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gorocksdb v1.2.0 // indirect
+	github.com/cosmos/ibc-go/v7 v7.3.0
 	github.com/cosmos/ledger-cosmos-go v0.12.4 // indirect
 	github.com/danieljoos/wincred v1.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -171,9 +173,6 @@ replace (
 
 	// dragonberry ics23 patch
 	github.com/confio/ics23/go => github.com/cosmos/cosmos-sdk/ics23/go v0.8.0
-
-	// using jackal labs free post proof ante handler - better way to do this in the future.
-	github.com/cosmos/cosmos-sdk => github.com/JackalLabs/cosmos-sdk-new v0.45.17-0.20251103190617-25fd7eb141f1
 
 	//github.com/cosmos/cosmos-sdk => ../cosmos-sdk
 
