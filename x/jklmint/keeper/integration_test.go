@@ -63,7 +63,6 @@ func genApp(withGenesis bool, invCheckPeriod uint) (*jklapp.JackalApp, jklapp.Ge
 		simapp.DefaultNodeHome,
 		invCheckPeriod,
 		encCdc,
-		jklapp.GetEnabledProposals(),
 		simapp.EmptyAppOptions{},
 		jklapp.GetWasmOpts(simapp.EmptyAppOptions{}),
 	)

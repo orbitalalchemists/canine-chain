@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 
 	"github.com/jackalLabs/canine-chain/v5/docs"
 	"github.com/jackalLabs/canine-chain/v5/docs/openapiconsole"
@@ -153,32 +152,7 @@ const appName = "JackalApp"
 var (
 	NodeDir      = ".canine"
 	Bech32Prefix = "jkl"
-
-	// ProposalsEnabled if EnabledSpecificProposals is "", and this is "true", then enable all x/wasm proposals.
-	// If EnabledSpecificProposals is "", and this is not "true", then disable all x/wasm proposals.
-	ProposalsEnabled = "false"
-	// EnableSpecificProposals if set to non-empty string it must be comma-separated list of values that are all a subset
-	// of "EnableAllProposals" (takes precedence over ProposalsEnabled)
-	// https://github.com/jackalLabs/canine-chain/blob/02a54d33ff2c064f3539ae12d75d027d9c665f05/x/wasm/internal/types/proposal.go#L28-L34
-	EnableSpecificProposals = ""
 )
-
-// GetEnabledProposals parses the ProposalsEnabled / EnableSpecificProposals values to
-// produce a list of enabled proposals to pass into wasmd app.
-func GetEnabledProposals() []wasm.ProposalType {
-	if EnableSpecificProposals == "" {
-		if ProposalsEnabled == "true" {
-			return wasm.EnableAllProposals
-		}
-		return wasm.DisableAllProposals
-	}
-	chunks := strings.Split(EnableSpecificProposals, ",")
-	proposals, err := wasm.ConvertToProposals(chunks)
-	if err != nil {
-		panic(err)
-	}
-	return proposals
-}
 
 // These constants are derived from the above variables.
 // These are the ones we will want to use in the code, based on
@@ -347,7 +321,6 @@ func NewJackalApp(
 	homePath string,
 	invCheckPeriod uint,
 	encodingConfig wasmappparams.EncodingConfig,
-	enabledProposals []wasm.ProposalType,
 	appOpts servertypes.AppOptions,
 	wasmOpts []wasm.Option,
 	baseAppOptions ...func(*baseapp.BaseApp),
@@ -659,12 +632,6 @@ func NewJackalApp(
 
 	// Create static IBC router, add app routes, then set and seal it
 	ibcRouter := ibcporttypes.NewRouter()
-
-	// The gov proposal types can be individually enabled
-	if len(enabledProposals) != 0 {
-		govRouter.AddRoute(wasm.RouterKey, wasm.NewWasmProposalHandler(app.wasmKeeper, enabledProposals))
-	}
-
 	var transferStack ibcporttypes.IBCModule
 	transferStack = transfer.NewIBCModule(app.transferKeeper)
 	transferStack = ibcfee.NewIBCMiddleware(transferStack, app.ibcFeeKeeper)

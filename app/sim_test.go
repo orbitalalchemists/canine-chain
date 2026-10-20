@@ -130,7 +130,7 @@ func TestAppImportExport(t *testing.T) {
 	}()
 
 	encConf := MakeEncodingConfig()
-	app := NewJackalApp(logger, db, nil, true, map[int64]bool{}, dir, simapp.FlagPeriodValue, encConf, wasm.EnableAllProposals, EmptyBaseAppOptions{}, nil, fauxMerkleModeOpt)
+	app := NewJackalApp(logger, db, nil, true, map[int64]bool{}, dir, simapp.FlagPeriodValue, encConf, EmptyBaseAppOptions{}, nil, fauxMerkleModeOpt)
 	require.Equal(t, appName, app.Name())
 
 	// Run randomized simulation
@@ -173,7 +173,7 @@ func TestAppImportExport(t *testing.T) {
 		newDB.Close()
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
-	newApp := NewJackalApp(logger, newDB, nil, true, map[int64]bool{}, newDir, simapp.FlagPeriodValue, encConf, wasm.EnableAllProposals, EmptyBaseAppOptions{}, nil, fauxMerkleModeOpt)
+	newApp := NewJackalApp(logger, newDB, nil, true, map[int64]bool{}, newDir, simapp.FlagPeriodValue, encConf, EmptyBaseAppOptions{}, nil, fauxMerkleModeOpt)
 	require.Equal(t, appName, newApp.Name())
 
 	var genesisState GenesisState
@@ -279,7 +279,7 @@ func TestFullAppSimulation(t *testing.T) {
 	}()
 	encConf := MakeEncodingConfig()
 	app := NewJackalApp(logger, db, nil, true, map[int64]bool{}, t.TempDir(), simapp.FlagPeriodValue,
-		encConf, wasm.EnableAllProposals, simapp.EmptyAppOptions{}, nil, fauxMerkleModeOpt)
+		encConf, simapp.EmptyAppOptions{}, nil, fauxMerkleModeOpt)
 	require.Equal(t, "JackalApp", app.Name())
 
 	// run randomized simulation
@@ -316,7 +316,7 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 	}()
 	encConf := MakeEncodingConfig()
 	app := NewJackalApp(logger, db, nil, true, map[int64]bool{}, b.TempDir(), simapp.FlagPeriodValue,
-		encConf, wasm.EnableAllProposals, simapp.EmptyAppOptions{}, nil, fauxMerkleModeOpt)
+		encConf, simapp.EmptyAppOptions{}, nil, fauxMerkleModeOpt)
 	require.Equal(b, "JackalApp", app.Name())
 
 	// run randomized simulation

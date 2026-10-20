@@ -63,7 +63,7 @@ func setup(t testing.TB, withGenesis bool, invCheckPeriod uint, opts ...wasm.Opt
 	require.NoError(t, err)
 	baseAppOpts := []func(*bam.BaseApp){bam.SetSnapshotStore(snapshotStore), bam.SetSnapshotKeepRecent(2)}
 	db := dbm.NewMemDB()
-	app := NewJackalApp(log.NewNopLogger(), db, nil, true, map[int64]bool{}, nodeHome, invCheckPeriod, MakeEncodingConfig(), wasm.EnableAllProposals, EmptyBaseAppOptions{}, opts, baseAppOpts...)
+	app := NewJackalApp(log.NewNopLogger(), db, nil, true, map[int64]bool{}, nodeHome, invCheckPeriod, MakeEncodingConfig(), EmptyBaseAppOptions{}, opts, baseAppOpts...)
 	if withGenesis {
 		return app, NewDefaultGenesisState()
 	}
