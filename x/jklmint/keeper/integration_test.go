@@ -8,10 +8,10 @@ import (
 	"github.com/cometbft/cometbft/libs/log"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
+	dbm "github.com/cometbft/cometbft-db"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/jackalLabs/canine-chain/v5/app/simhelpers"
 	"github.com/jackalLabs/canine-chain/v5/x/jklmint/types"
-	dbm "github.com/tendermint/tm-db"
 
 	jklapp "github.com/jackalLabs/canine-chain/v5/app"
 )

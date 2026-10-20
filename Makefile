@@ -161,7 +161,7 @@ ifeq ($(filter $(lower_WITH_PEBBLEDB),true yes),true)
   TENDERMINT_BUILD_OPTIONS += pebbledb
   export TENDERMINT_BUILD_OPTIONS
   build_tags += pebbledb
-  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=pebbledb -X github.com/tendermint/tm-db.ForceSync=1
+  ldflags += -X github.com/cosmos/cosmos-sdk/types.DBBackend=pebbledb -X github.com/cometbft/cometbft-db.ForceSync=1
   
   $(info Generating go-4pebbledb.mod from go.mod with PebbleDB replacements...)
   SYNC_RESULT := $(shell cp go.mod go-4pebbledb.mod && \
