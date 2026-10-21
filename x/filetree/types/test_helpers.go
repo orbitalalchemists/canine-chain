@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	sdkClient "github.com/cosmos/cosmos-sdk/client"
+	"github.com/cosmos/cosmos-sdk/codec"
 	"github.com/cosmos/cosmos-sdk/crypto/hd"
 	keyring "github.com/cosmos/cosmos-sdk/crypto/keyring"
 	"github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
@@ -16,9 +17,9 @@ import (
 )
 
 // generate a mock private key using mock keyring
-func MakePrivateKey(fromName string) (*eciesgo.PrivateKey, error) {
+func MakePrivateKey(fromName string, cdc codec.Codec) (*eciesgo.PrivateKey, error) {
 	var ctx sdkClient.Context
-	ctx.Keyring = keyring.NewInMemory()
+	ctx.Keyring = keyring.NewInMemory(cdc)
 	ctx.FromName = fromName
 
 	algo := hd.Secp256k1

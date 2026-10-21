@@ -24,7 +24,7 @@ func (suite *KeeperTestSuite) TestMsgResetViewers() {
 	// Let it be that bob has posted a public key after signing
 	// with his keyring backend using the CLI.
 
-	bobPrivateKey, err := types.MakePrivateKey("bob")
+	bobPrivateKey, err := types.MakePrivateKey("bob", suite.cdc)
 	suite.Require().NoError(err)
 
 	bobPubKey := bobPrivateKey.PublicKey.Bytes(false) // to hex

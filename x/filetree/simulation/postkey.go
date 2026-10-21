@@ -9,6 +9,7 @@ import (
 	simtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	simappparams "github.com/jackalLabs/canine-chain/v5/app/params"
+	moduletestutil "github.com/jackalLabs/canine-chain/v5/types/module/testutil"
 	"github.com/jackalLabs/canine-chain/v5/x/filetree/keeper"
 	"github.com/jackalLabs/canine-chain/v5/x/filetree/types"
 )
@@ -23,7 +24,7 @@ func SimulateMsgPostkey(
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		address, _ := sdk.Bech32ifyAddressBytes("jkl", simAccount.Address)
 
-		privateKey, err := types.MakePrivateKey(address)
+		privateKey, err := types.MakePrivateKey(address, moduletestutil.MakeTestEncodingConfig().Codec)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, types.TypeMsgPostKey, "unable to create privateKey"), nil, err
 		}

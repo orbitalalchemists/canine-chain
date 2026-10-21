@@ -32,7 +32,7 @@ func (suite *KeeperTestSuite) TestMsgAddViewers() {
 	// with his keyring backend using the CLI. Below is a simulation of a CLI client environment
 
 	var ctx sdkClient.Context
-	ctx.Keyring = keyring.NewInMemory() // temporary keyring
+	ctx.Keyring = keyring.NewInMemory(suite.cdc) // temporary keyring
 
 	// clientCtx.FromName in the CLI will be bob's keyring ID (bob), not the full bech32 address
 	// The canined (daemon) will initialize clientCtx.FromName with bob's keyring ID taken directly from the keyring backend
