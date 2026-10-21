@@ -28,7 +28,7 @@ require (
 )
 
 require (
-	github.com/cosmos/cosmos-proto v1.0.0-beta.5
+	github.com/cosmos/cosmos-proto v1.0.0-beta.4
 	github.com/cosmos/gogoproto v1.4.10
 	github.com/cosmos/iavl v0.20.1 // indirect
 	github.com/creachadair/taskgroup v0.4.2 // indirect
@@ -195,7 +195,7 @@ require (
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/term v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
-	google.golang.org/protobuf v1.33.0 // indirect
+	google.golang.org/protobuf v1.32.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	nhooyr.io/websocket v1.8.6 // indirect
