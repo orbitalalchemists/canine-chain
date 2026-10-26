@@ -112,15 +112,15 @@ func (k msgServer) PostFile(goCtx context.Context, msg *types.MsgPostFile) (*typ
 
 		spr := sdk.NewDec(1).Sub(refDec).Sub(pol) // whatever is left from pol and referrals
 
-		storageProviderCut := toPay.Amount.ToDec().Mul(spr)
+		storageProviderCut := toPay.Amount.ToLegacyDec().Mul(spr)
 		spcToken := sdk.NewCoin(toPay.Denom, storageProviderCut.TruncateInt())
 		spcTokens := sdk.NewCoins(spcToken)
 
-		polCut := toPay.Amount.ToDec().Mul(pol)
+		polCut := toPay.Amount.ToLegacyDec().Mul(pol)
 		polToken := sdk.NewCoin(toPay.Denom, polCut.TruncateInt())
 		polTokens := sdk.NewCoins(polToken)
 
-		refCut := toPay.Amount.ToDec().Mul(refDec) // 25% to referrals
+		refCut := toPay.Amount.ToLegacyDec().Mul(refDec) // 25% to referrals
 		refToken := sdk.NewCoin(toPay.Denom, refCut.TruncateInt())
 		refTokens := sdk.NewCoins(refToken)
 
