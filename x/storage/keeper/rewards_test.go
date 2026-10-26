@@ -23,7 +23,7 @@ func (suite *KeeperTestSuite) TestDecimals() {
 
 	coins := sdk.NewCoin("ujkl", sdk.NewInt(6000000))
 
-	res = res.Mul(coins.Amount.ToDec())
+	res = res.Mul(coins.Amount.ToLegacyDec())
 
 	suite.Require().Equal(int64(237655), res.TruncateInt64())
 }
