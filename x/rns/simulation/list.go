@@ -77,7 +77,7 @@ func SimulateMsgList(
 		// generating the fees
 		price := sdk.NewInt(0) // listing is free?
 		spendable := bk.SpendableCoins(ctx, simAccount.Address)
-		coins, hasNeg := spendable.SafeSub(sdk.NewCoins(sdk.NewCoin("ujkl", price)))
+		coins, hasNeg := spendable.SafeSub(sdk.NewCoin("ujkl", price))
 
 		var fees sdk.Coins
 

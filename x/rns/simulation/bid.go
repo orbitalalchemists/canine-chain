@@ -71,7 +71,7 @@ func SimulateMsgBid(
 
 		// generating the fees
 		spendable := bk.SpendableCoins(ctx, simAccount.Address)
-		coins, hasNeg := spendable.SafeSub(sdk.NewCoins(sdk.NewCoin("ujkl", sdkPrice)))
+		coins, hasNeg := spendable.SafeSub(sdk.NewCoin("ujkl", sdkPrice))
 
 		var fees sdk.Coins
 
