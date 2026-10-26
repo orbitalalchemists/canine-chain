@@ -89,7 +89,7 @@ func (k Keeper) GetInflation(ctx sdk.Context) (sdk.Dec, error) {
 	denom := params.MintDenom
 	coins := k.bankKeeper.GetSupply(ctx, denom)
 
-	amt := coins.Amount.ToDec()
+	amt := coins.Amount.ToLegacyDec()
 
 	if amt.IsZero() {
 		return sdk.NewDec(0), nil
