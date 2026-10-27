@@ -270,7 +270,7 @@ type JackalApp struct {
 	distrKeeper      distrkeeper.Keeper
 	govKeeper        govkeeper.Keeper
 	crisisKeeper     *crisiskeeper.Keeper
-	upgradeKeeper    upgradekeeper.Keeper
+	upgradeKeeper    *upgradekeeper.Keeper
 	paramsKeeper     paramskeeper.Keeper
 	evidenceKeeper   evidencekeeper.Keeper
 	ibcKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
@@ -470,6 +470,7 @@ func NewJackalApp(
 		appCodec,
 		homePath,
 		app.BaseApp,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 
 	// register the staking hooks
