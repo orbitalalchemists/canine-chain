@@ -412,6 +412,7 @@ func NewJackalApp(
 		keys[authzkeeper.StoreKey],
 		appCodec,
 		app.MsgServiceRouter(),
+		app.AccountKeeper,
 	)
 	app.feeGrantKeeper = feegrantkeeper.NewKeeper(
 		appCodec,
