@@ -91,7 +91,6 @@ import (
 	ibcclientclient "github.com/cosmos/ibc-go/v7/modules/core/02-client/client"
 	ibcclienttypes "github.com/cosmos/ibc-go/v7/modules/core/02-client/types"
 	ibcporttypes "github.com/cosmos/ibc-go/v7/modules/core/05-port/types"
-	ibchost "github.com/cosmos/ibc-go/v7/modules/core/24-host"
 	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	ibckeeper "github.com/cosmos/ibc-go/v7/modules/core/keeper"
 
@@ -386,7 +385,7 @@ func NewJackalApp(
 		keys[capabilitytypes.StoreKey],
 		memKeys[capabilitytypes.MemStoreKey],
 	)
-	scopedIBCKeeper := app.capabilityKeeper.ScopeToModule(ibchost.ModuleName)
+	scopedIBCKeeper := app.capabilityKeeper.ScopeToModule(ibcexported.ModuleName)
 	scopedTransferKeeper := app.capabilityKeeper.ScopeToModule(ibctransfertypes.ModuleName)
 	scopedICAControllerKeeper := app.capabilityKeeper.ScopeToModule(icacontrollertypes.SubModuleName)
 	scopedICAHostKeeper := app.capabilityKeeper.ScopeToModule(icahosttypes.SubModuleName)
@@ -478,7 +477,7 @@ func NewJackalApp(
 	app.ibcKeeper = ibckeeper.NewKeeper(
 		appCodec,
 		keys[ibcexported.StoreKey],
-		app.getSubspace(ibchost.ModuleName),
+		app.getSubspace(ibcexported.ModuleName),
 		app.stakingKeeper,
 		app.upgradeKeeper,
 		scopedIBCKeeper,
@@ -737,7 +736,7 @@ func NewJackalApp(
 		icatypes.ModuleName,
 
 		ibctransfertypes.ModuleName,
-		ibchost.ModuleName,
+		ibcexported.ModuleName,
 		ibcfeetypes.ModuleName,
 		rnsmoduletypes.ModuleName,
 		storagemoduletypes.ModuleName,
@@ -773,7 +772,7 @@ func NewJackalApp(
 		icatypes.ModuleName,
 
 		ibctransfertypes.ModuleName,
-		ibchost.ModuleName,
+		ibcexported.ModuleName,
 		ibcfeetypes.ModuleName,
 
 		rnsmoduletypes.ModuleName,
@@ -815,7 +814,7 @@ func NewJackalApp(
 		vestingtypes.ModuleName,
 		// additional non simd modules
 		ibctransfertypes.ModuleName,
-		ibchost.ModuleName,
+		ibcexported.ModuleName,
 		icatypes.ModuleName,
 		// wasm after ibc transfer
 		ibcfeetypes.ModuleName,
@@ -852,7 +851,7 @@ func NewJackalApp(
 		vestingtypes.ModuleName,
 		// additional non simd modules
 		ibctransfertypes.ModuleName,
-		ibchost.ModuleName,
+		ibcexported.ModuleName,
 		icatypes.ModuleName,
 		// wasm after ibc transfer
 		rnsmoduletypes.ModuleName,
@@ -876,7 +875,7 @@ func NewJackalApp(
 		feegrant.ModuleName,
 		genutiltypes.ModuleName,
 		govtypes.ModuleName,
-		ibchost.ModuleName,
+		ibcexported.ModuleName,
 		minttypes.ModuleName,
 		slashingtypes.ModuleName,
 		stakingtypes.ModuleName,
@@ -1128,7 +1127,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(govtypes.ModuleName).WithKeyTable(govtypes.ParamKeyTable())
 	paramsKeeper.Subspace(crisistypes.ModuleName)
 	paramsKeeper.Subspace(ibctransfertypes.ModuleName)
-	paramsKeeper.Subspace(ibchost.ModuleName)
+	paramsKeeper.Subspace(ibcexported.ModuleName)
 	paramsKeeper.Subspace(icacontrollertypes.SubModuleName)
 	paramsKeeper.Subspace(icahosttypes.SubModuleName)
 	paramsKeeper.Subspace(rnsmoduletypes.ModuleName)
