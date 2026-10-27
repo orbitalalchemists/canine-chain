@@ -451,9 +451,10 @@ func NewJackalApp(
 	)
 	app.slashingKeeper = slashingkeeper.NewKeeper(
 		appCodec,
+		legacyAmino,
 		keys[slashingtypes.StoreKey],
-		&stakingKeeper,
-		app.getSubspace(slashingtypes.ModuleName),
+		stakingKeeper,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 	)
 	app.crisisKeeper = crisiskeeper.NewKeeper(
 		app.getSubspace(crisistypes.ModuleName),
