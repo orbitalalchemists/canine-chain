@@ -143,6 +143,7 @@ import (
 
 	// unnamed import of statik for swagger UI support
 	_ "github.com/cosmos/cosmos-sdk/client/docs/statik"
+	nodeservice "github.com/cosmos/cosmos-sdk/client/grpc/node"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 )
 
@@ -1052,6 +1053,11 @@ func (app *JackalApp) getSubspace(moduleName string) paramstypes.Subspace {
 // SimulationManager implements the SimulationApp interface
 func (app *JackalApp) SimulationManager() *module.SimulationManager {
 	return app.sm
+}
+
+// RegisterNodeService implements the v0.47 servertypes.Application interface.
+func (app *JackalApp) RegisterNodeService(clientCtx client.Context) {
+	nodeservice.RegisterNodeService(clientCtx, app.GRPCQueryRouter())
 }
 
 // RegisterAPIRoutes registers all application module routes with the provided
