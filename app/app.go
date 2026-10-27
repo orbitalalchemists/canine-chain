@@ -269,7 +269,7 @@ type JackalApp struct {
 	MintKeeper       mintkeeper.Keeper
 	distrKeeper      distrkeeper.Keeper
 	govKeeper        govkeeper.Keeper
-	crisisKeeper     crisiskeeper.Keeper
+	crisisKeeper     *crisiskeeper.Keeper
 	upgradeKeeper    upgradekeeper.Keeper
 	paramsKeeper     paramskeeper.Keeper
 	evidenceKeeper   evidencekeeper.Keeper
@@ -701,7 +701,7 @@ func NewJackalApp(
 		ibc.NewAppModule(app.ibcKeeper),
 		params.NewAppModule(app.paramsKeeper),
 		transferModule,
-		crisis.NewAppModule(&app.crisisKeeper, skipGenesisInvariants), // always be last to make sure that it checks for all invariants and not only part of them
+		crisis.NewAppModule(app.crisisKeeper, skipGenesisInvariants, app.getSubspace(crisistypes.ModuleName)), // always be last to make sure that it checks for all invariants and not only part of them
 		rnsModule,
 		storageModule,
 		filetreeModule,
@@ -901,7 +901,7 @@ func NewJackalApp(
 	// Uncomment if you want to set a custom migration order here.
 	// app.mm.SetOrderMigrations(custom order)
 
-	app.mm.RegisterInvariants(&app.crisisKeeper)
+	app.mm.RegisterInvariants(app.crisisKeeper)
 
 	app.configurator = module.NewConfigurator(app.appCodec, app.MsgServiceRouter(), app.GRPCQueryRouter())
 	app.mm.RegisterServices(app.configurator)
