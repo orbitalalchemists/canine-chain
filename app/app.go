@@ -264,7 +264,7 @@ type JackalApp struct {
 	AccountKeeper    authkeeper.AccountKeeper
 	BankKeeper       bankkeeper.Keeper
 	capabilityKeeper *capabilitykeeper.Keeper
-	stakingKeeper    stakingkeeper.Keeper
+	stakingKeeper    *stakingkeeper.Keeper
 	slashingKeeper   slashingkeeper.Keeper
 	MintKeeper       mintkeeper.Keeper
 	distrKeeper      distrkeeper.Keeper
@@ -475,7 +475,8 @@ func NewJackalApp(
 
 	// register the staking hooks
 	// NOTE: stakingKeeper above is passed by reference, so that it will contain these hooks
-	app.stakingKeeper = *stakingKeeper.SetHooks(
+	app.stakingKeeper = stakingKeeper
+	app.stakingKeeper.SetHooks(
 		stakingtypes.NewMultiStakingHooks(app.distrKeeper.Hooks(), app.slashingKeeper.Hooks()),
 	)
 
