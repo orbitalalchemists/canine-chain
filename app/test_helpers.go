@@ -37,8 +37,8 @@ import (
 
 // DefaultConsensusParams defines the default Tendermint consensus params used in
 // JackalApp testing.
-var DefaultConsensusParams = &abci.ConsensusParams{
-	Block: &abci.BlockParams{
+var DefaultConsensusParams = &tmproto.ConsensusParams{
+	Block: &tmproto.BlockParams{
 		MaxBytes: 8000000,
 		MaxGas:   1234000000,
 	},
