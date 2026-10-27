@@ -80,7 +80,7 @@ func trackMockBalances(bankKeeper *rnstestutil.MockBankKeeper) {
 
 	// But we do track normal account balances.
 	bankKeeper.EXPECT().SendCoinsFromAccountToModule(gomock.Any(), gomock.Any(), types.ModuleName, gomock.Any()).DoAndReturn(func(_ sdk.Context, sender sdk.AccAddress, _ string, coins sdk.Coins) error {
-		newBalance, negative := balances[sender.String()].SafeSub(coins) // in v0.46, this method is variadic
+		newBalance, negative := balances[sender.String()].SafeSub(coins...) // in v0.46, this method is variadic
 		if negative {
 			return fmt.Errorf("not enough balance")
 		}
