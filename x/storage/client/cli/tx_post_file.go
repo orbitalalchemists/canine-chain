@@ -20,6 +20,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 
 	"github.com/cometbft/cometbft/libs/rand"
+	coretypes "github.com/cometbft/cometbft/rpc/core/types"
 	"github.com/cosmos/cosmos-sdk/client/input"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/spf13/pflag"
@@ -83,8 +84,11 @@ func prepareFactory(clientCtx client.Context, txf tx.Factory) (tx.Factory, error
 
 // GenerateOrBroadcastTx is some dumb wrapper I had to make cause the sdk assumes I don't want to programmatically handle the
 // response but instead print it out like a doofus
-func GenerateOrBroadcastTx(clientCtx client.Context, flags *pflag.FlagSet, msgs ...sdk.Msg) (*sdk.TxResponse, error) {
-	txf := tx.NewFactoryCLI(clientCtx, flags)
+func GenerateOrBroadcastTx(clientCtx client.Context, flagSet *pflag.FlagSet, msgs ...sdk.Msg) (*sdk.TxResponse, error) {
+	txf, err := tx.NewFactoryCLI(clientCtx, flagSet)
+	if err != nil {
+		return nil, err
+	}
 
 	for _, msg := range msgs {
 		if err := msg.ValidateBasic(); err != nil {
@@ -92,7 +96,7 @@ func GenerateOrBroadcastTx(clientCtx client.Context, flags *pflag.FlagSet, msgs 
 		}
 	}
 
-	txf, err := prepareFactory(clientCtx, txf)
+	txf, err = prepareFactory(clientCtx, txf)
 	if err != nil {
 		return nil, err
 	}
@@ -111,7 +115,7 @@ func GenerateOrBroadcastTx(clientCtx client.Context, flags *pflag.FlagSet, msgs 
 		return nil, err
 	}
 
-	txn, err := tx.BuildUnsignedTx(txf, msgs...)
+	txn, err := txf.BuildUnsignedTx(msgs...)
 	if err != nil {
 		return nil, err
 	}
@@ -144,8 +148,10 @@ func GenerateOrBroadcastTx(clientCtx client.Context, flags *pflag.FlagSet, msgs 
 		return nil, err
 	}
 
-	// broadcast to a Tendermint node
-	return clientCtx.BroadcastTxCommit(txBytes)
+	// v0.47 port: BroadcastTxCommit was removed from client.Context; the
+	// local helper below preserves v0.45 commit semantics so res.Events
+	// stays populated for the post_file "start" attribute scrape.
+	return broadcastTxCommit(clientCtx, txBytes)
 }
 
 func uploadFile(ip string, r io.Reader, merkle []byte, start int64, address string) error {
@@ -550,4 +556,92 @@ func CmdPostManyFiles() *cobra.Command {
 	cmd.Flags().Int64("max_proofs", 3, "max proofs")
 	flags.AddTxFlagsToCmd(cmd)
 	return cmd
+}
+
+// broadcastTxCommit preserves the v0.45 client.Context.BroadcastTxCommit
+// behaviour that v0.47 removed: block-mode broadcast returning a TxResponse
+// built from the DeliverTx result, so res.Events stays populated.
+func broadcastTxCommit(clientCtx client.Context, txBytes []byte) (*sdk.TxResponse, error) {
+	node, err := clientCtx.GetNode()
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := node.BroadcastTxCommit(context.Background(), txBytes)
+	if err == nil {
+		return newResponseFormatBroadcastTxCommit(res), nil
+	}
+
+	if errRes := client.CheckTendermintError(err, txBytes); errRes != nil {
+		return errRes, nil
+	}
+	return newResponseFormatBroadcastTxCommit(res), err
+}
+
+// newResponseFormatBroadcastTxCommit returns a TxResponse given a
+// ResultBroadcastTxCommit from CometBFT (ported from sdk v0.45 types/result.go).
+func newResponseFormatBroadcastTxCommit(res *coretypes.ResultBroadcastTxCommit) *sdk.TxResponse {
+	if res == nil {
+		return nil
+	}
+
+	if !res.CheckTx.IsOK() {
+		return newTxResponseCheckTx(res)
+	}
+
+	return newTxResponseDeliverTx(res)
+}
+
+func newTxResponseCheckTx(res *coretypes.ResultBroadcastTxCommit) *sdk.TxResponse {
+	if res == nil {
+		return nil
+	}
+
+	var txHash string
+	if res.Hash != nil {
+		txHash = res.Hash.String()
+	}
+
+	parsedLogs, _ := sdk.ParseABCILogs(res.CheckTx.Log)
+
+	return &sdk.TxResponse{
+		Height:    res.Height,
+		TxHash:    txHash,
+		Codespace: res.CheckTx.Codespace,
+		Code:      res.CheckTx.Code,
+		Data:      strings.ToUpper(hex.EncodeToString(res.CheckTx.Data)),
+		RawLog:    res.CheckTx.Log,
+		Logs:      parsedLogs,
+		Info:      res.CheckTx.Info,
+		GasWanted: res.CheckTx.GasWanted,
+		GasUsed:   res.CheckTx.GasUsed,
+		Events:    res.CheckTx.Events,
+	}
+}
+
+func newTxResponseDeliverTx(res *coretypes.ResultBroadcastTxCommit) *sdk.TxResponse {
+	if res == nil {
+		return nil
+	}
+
+	var txHash string
+	if res.Hash != nil {
+		txHash = res.Hash.String()
+	}
+
+	parsedLogs, _ := sdk.ParseABCILogs(res.DeliverTx.Log)
+
+	return &sdk.TxResponse{
+		Height:    res.Height,
+		TxHash:    txHash,
+		Codespace: res.DeliverTx.Codespace,
+		Code:      res.DeliverTx.Code,
+		Data:      strings.ToUpper(hex.EncodeToString(res.DeliverTx.Data)),
+		RawLog:    res.DeliverTx.Log,
+		Logs:      parsedLogs,
+		Info:      res.DeliverTx.Info,
+		GasWanted: res.DeliverTx.GasWanted,
+		GasUsed:   res.DeliverTx.GasUsed,
+		Events:    res.DeliverTx.Events,
+	}
 }
