@@ -62,7 +62,7 @@ func SimulateMsgBuyStorage(
 		}
 
 		spendable := bk.SpendableCoins(ctx, simAccount.Address)
-		coins, hasNeg := spendable.SafeSub(sdk.NewCoins(sdk.NewCoin("ujkl", cost)))
+		coins, hasNeg := spendable.SafeSub(sdk.NewCoin("ujkl", cost))
 
 		var fees sdk.Coins
 
