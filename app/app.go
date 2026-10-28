@@ -536,7 +536,7 @@ func NewJackalApp(
 	evidenceKeeper := evidencekeeper.NewKeeper(
 		appCodec,
 		keys[evidencetypes.StoreKey],
-		&app.stakingKeeper,
+		app.stakingKeeper,
 		app.slashingKeeper,
 	)
 	app.evidenceKeeper = *evidenceKeeper
