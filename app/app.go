@@ -555,11 +555,10 @@ func NewJackalApp(
 	app.wasmKeeper = wasm.NewKeeper(
 		appCodec,
 		keys[wasm.StoreKey],
-		app.getSubspace(wasm.ModuleName),
 		app.AccountKeeper,
 		app.BankKeeper,
 		app.stakingKeeper,
-		app.distrKeeper,
+		distrkeeper.NewQuerier(app.distrKeeper),
 		app.ibcFeeKeeper, // ISC4 Wrapper: fee IBC middleware
 		app.ibcKeeper.ChannelKeeper,
 		&app.ibcKeeper.PortKeeper,
@@ -570,6 +569,7 @@ func NewJackalApp(
 		wasmDir,
 		wasmConfig,
 		supportedFeatures,
+		authtypes.NewModuleAddress(govtypes.ModuleName).String(),
 		wasmOpts...,
 	)
 
