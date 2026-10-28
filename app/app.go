@@ -527,6 +527,7 @@ func NewJackalApp(
 
 	app.ICAHostKeeper = icahostkeeper.NewKeeper(
 		appCodec, keys[icahosttypes.StoreKey], app.getSubspace(icahosttypes.SubModuleName),
+		app.ibcKeeper.ChannelKeeper,
 		app.ibcKeeper.ChannelKeeper, &app.ibcKeeper.PortKeeper,
 		app.AccountKeeper, scopedICAHostKeeper, app.MsgServiceRouter(),
 	)
