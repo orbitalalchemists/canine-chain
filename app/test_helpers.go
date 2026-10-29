@@ -30,7 +30,7 @@ import (
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
-	"github.com/jackalLabs/canine-chain/v5/app/simhelpers"
+	helpers "github.com/jackalLabs/canine-chain/v5/app/simhelpers"
 	"github.com/stretchr/testify/require"
 
 	"github.com/CosmWasm/wasmd/x/wasm"
