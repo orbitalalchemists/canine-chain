@@ -1097,7 +1097,7 @@ func (app *JackalApp) RegisterTxService(clientCtx client.Context) {
 
 // RegisterTendermintService implements the Application.RegisterTendermintService method.
 func (app *JackalApp) RegisterTendermintService(clientCtx client.Context) {
-	tmservice.RegisterTendermintService(app.GRPCQueryRouter(), clientCtx, app.InterfaceRegistry)
+	tmservice.RegisterTendermintService(clientCtx, app.GRPCQueryRouter(), app.InterfaceRegistry, app.Query)
 }
 
 func (app *JackalApp) AppCodec() codec.Codec {
