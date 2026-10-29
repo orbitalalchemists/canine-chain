@@ -51,7 +51,7 @@ func (s TestSupport) ScopedTransferKeeper() capabilitykeeper.ScopedKeeper {
 	return s.app.scopedTransferKeeper
 }
 
-func (s TestSupport) StakingKeeper() stakingkeeper.Keeper {
+func (s TestSupport) StakingKeeper() *stakingkeeper.Keeper {
 	return s.app.stakingKeeper
 }
 
