@@ -42,6 +42,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/x/capability"
 	capabilitykeeper "github.com/cosmos/cosmos-sdk/x/capability/keeper"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
+	consensus "github.com/cosmos/cosmos-sdk/x/consensus"
+	consensusparamkeeper "github.com/cosmos/cosmos-sdk/x/consensus/keeper"
+	consensusparamtypes "github.com/cosmos/cosmos-sdk/x/consensus/types"
 	"github.com/cosmos/cosmos-sdk/x/crisis"
 	crisiskeeper "github.com/cosmos/cosmos-sdk/x/crisis/keeper"
 	crisistypes "github.com/cosmos/cosmos-sdk/x/crisis/types"
@@ -215,6 +218,7 @@ var (
 		oraclemodule.AppModuleBasic{},
 		notificationsmodule.AppModuleBasic{},
 		ica.AppModuleBasic{},
+		consensus.AppModuleBasic{},
 		/*
 			dsigmodule.AppModuleBasic{},
 		*/
@@ -262,24 +266,25 @@ type JackalApp struct {
 	memKeys map[string]*storetypes.MemoryStoreKey
 
 	// keepers
-	AccountKeeper    authkeeper.AccountKeeper
-	BankKeeper       bankkeeper.Keeper
-	capabilityKeeper *capabilitykeeper.Keeper
-	stakingKeeper    *stakingkeeper.Keeper
-	slashingKeeper   slashingkeeper.Keeper
-	MintKeeper       mintkeeper.Keeper
-	distrKeeper      distrkeeper.Keeper
-	govKeeper        govkeeper.Keeper
-	crisisKeeper     *crisiskeeper.Keeper
-	upgradeKeeper    *upgradekeeper.Keeper
-	paramsKeeper     paramskeeper.Keeper
-	evidenceKeeper   evidencekeeper.Keeper
-	ibcKeeper        *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
-	ibcFeeKeeper     ibcfeekeeper.Keeper
-	transferKeeper   ibctransferkeeper.Keeper
-	feeGrantKeeper   feegrantkeeper.Keeper
-	authzKeeper      authzkeeper.Keeper
-	wasmKeeper       wasm.Keeper
+	AccountKeeper         authkeeper.AccountKeeper
+	BankKeeper            bankkeeper.Keeper
+	capabilityKeeper      *capabilitykeeper.Keeper
+	stakingKeeper         *stakingkeeper.Keeper
+	slashingKeeper        slashingkeeper.Keeper
+	MintKeeper            mintkeeper.Keeper
+	distrKeeper           distrkeeper.Keeper
+	govKeeper             govkeeper.Keeper
+	crisisKeeper          *crisiskeeper.Keeper
+	upgradeKeeper         *upgradekeeper.Keeper
+	paramsKeeper          paramskeeper.Keeper
+	ConsensusParamsKeeper consensusparamkeeper.Keeper
+	evidenceKeeper        evidencekeeper.Keeper
+	ibcKeeper             *ibckeeper.Keeper // IBC Keeper must be a pointer in the app, so we can SetRouter on it correctly
+	ibcFeeKeeper          ibcfeekeeper.Keeper
+	transferKeeper        ibctransferkeeper.Keeper
+	feeGrantKeeper        feegrantkeeper.Keeper
+	authzKeeper           authzkeeper.Keeper
+	wasmKeeper            wasm.Keeper
 
 	scopedIBCKeeper           capabilitykeeper.ScopedKeeper
 	scopedTransferKeeper      capabilitykeeper.ScopedKeeper
@@ -337,7 +342,7 @@ func NewJackalApp(
 	keys := sdk.NewKVStoreKeys(
 		authtypes.StoreKey, banktypes.StoreKey, stakingtypes.StoreKey,
 		minttypes.StoreKey, distrtypes.StoreKey, slashingtypes.StoreKey,
-		govtypes.StoreKey, paramstypes.StoreKey, ibcexported.StoreKey, upgradetypes.StoreKey,
+		govtypes.StoreKey, paramstypes.StoreKey, consensusparamtypes.StoreKey, ibcexported.StoreKey, upgradetypes.StoreKey,
 		evidencetypes.StoreKey, ibctransfertypes.StoreKey, capabilitytypes.StoreKey,
 		feegrant.StoreKey, authzkeeper.StoreKey, wasm.StoreKey, rnsmoduletypes.StoreKey,
 		storagemoduletypes.StoreKey, filetreemoduletypes.StoreKey, oraclemoduletypes.StoreKey,
@@ -378,7 +383,8 @@ func NewJackalApp(
 	)
 
 	// set the BaseApp's parameter store
-	bApp.SetParamStore(app.paramsKeeper.Subspace(baseapp.Paramspace).WithKeyTable(paramskeeper.ConsensusParamsKeyTable()))
+	app.ConsensusParamsKeeper = consensusparamkeeper.NewKeeper(appCodec, keys[consensusparamtypes.StoreKey], authtypes.NewModuleAddress(govtypes.ModuleName).String())
+	bApp.SetParamStore(&app.ConsensusParamsKeeper)
 
 	// add capability keeper and ScopeToModule for ibc module
 	app.capabilityKeeper = capabilitykeeper.NewKeeper(
@@ -715,6 +721,7 @@ func NewJackalApp(
 		oracleModule,
 		notificationsModule,
 		icaModule,
+		consensus.NewAppModule(appCodec, app.ConsensusParamsKeeper),
 
 		/*
 			dsigModule,
@@ -743,6 +750,7 @@ func NewJackalApp(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
+		consensusparamtypes.ModuleName,
 		// additional non simd modules
 		icatypes.ModuleName,
 
@@ -779,6 +787,7 @@ func NewJackalApp(
 		feegrant.ModuleName,
 		paramstypes.ModuleName,
 		vestingtypes.ModuleName,
+		consensusparamtypes.ModuleName,
 		// additional non simd modules
 		icatypes.ModuleName,
 
@@ -823,6 +832,7 @@ func NewJackalApp(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
+		consensusparamtypes.ModuleName,
 		// additional non simd modules
 		ibctransfertypes.ModuleName,
 		ibcexported.ModuleName,
@@ -860,6 +870,7 @@ func NewJackalApp(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
+		consensusparamtypes.ModuleName,
 		// additional non simd modules
 		ibctransfertypes.ModuleName,
 		ibcexported.ModuleName,
@@ -894,6 +905,7 @@ func NewJackalApp(
 		paramstypes.ModuleName,
 		upgradetypes.ModuleName,
 		vestingtypes.ModuleName,
+		consensusparamtypes.ModuleName,
 		wasm.ModuleName,
 		rnsmoduletypes.ModuleName,
 		oraclemoduletypes.ModuleName,
