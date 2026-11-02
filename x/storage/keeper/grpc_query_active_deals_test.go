@@ -8,6 +8,7 @@ import (
 	dbm "github.com/cometbft/cometbft-db"
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	"github.com/cosmos/cosmos-sdk/baseapp"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	jklapp "github.com/jackalLabs/canine-chain/v5/app"
@@ -17,7 +18,6 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 
 	"github.com/cometbft/cometbft/libs/log"
-	"github.com/jackalLabs/canine-chain/v5/app/simhelpers"
 )
 
 func genApp(withGenesis bool, invCheckPeriod uint) (*jklapp.JackalApp, jklapp.GenesisState) {
@@ -29,11 +29,11 @@ func genApp(withGenesis bool, invCheckPeriod uint) (*jklapp.JackalApp, jklapp.Ge
 		nil,
 		true,
 		map[int64]bool{},
-		simapp.DefaultNodeHome,
+		jklapp.DefaultNodeHome,
 		invCheckPeriod,
 		encCdc,
-		simapp.EmptyAppOptions{},
-		jklapp.GetWasmOpts(simapp.EmptyAppOptions{}),
+		simtestutil.EmptyAppOptions{},
+		jklapp.GetWasmOpts(simtestutil.EmptyAppOptions{}),
 	)
 
 	if withGenesis {
@@ -56,7 +56,7 @@ func setup(isCheckTx bool) *jklapp.JackalApp {
 		app.InitChain(
 			abci.RequestInitChain{
 				Validators:      []abci.ValidatorUpdate{},
-				ConsensusParams: simapp.DefaultConsensusParams,
+				ConsensusParams: simtestutil.DefaultConsensusParams,
 				AppStateBytes:   stateBytes,
 			},
 		)

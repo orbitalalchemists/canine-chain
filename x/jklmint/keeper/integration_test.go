@@ -9,8 +9,8 @@ import (
 	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 
 	dbm "github.com/cometbft/cometbft-db"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/jackalLabs/canine-chain/v5/app/simhelpers"
 	"github.com/jackalLabs/canine-chain/v5/x/jklmint/types"
 
 	jklapp "github.com/jackalLabs/canine-chain/v5/app"
@@ -42,7 +42,7 @@ func setup(isCheckTx bool) *jklapp.JackalApp {
 		app.InitChain(
 			abci.RequestInitChain{
 				Validators:      []abci.ValidatorUpdate{},
-				ConsensusParams: simapp.DefaultConsensusParams,
+				ConsensusParams: simtestutil.DefaultConsensusParams,
 				AppStateBytes:   stateBytes,
 			},
 		)
@@ -60,11 +60,11 @@ func genApp(withGenesis bool, invCheckPeriod uint) (*jklapp.JackalApp, jklapp.Ge
 		nil,
 		true,
 		map[int64]bool{},
-		simapp.DefaultNodeHome,
+		jklapp.DefaultNodeHome,
 		invCheckPeriod,
 		encCdc,
-		simapp.EmptyAppOptions{},
-		jklapp.GetWasmOpts(simapp.EmptyAppOptions{}),
+		simtestutil.EmptyAppOptions{},
+		jklapp.GetWasmOpts(simtestutil.EmptyAppOptions{}),
 	)
 
 	if withGenesis {

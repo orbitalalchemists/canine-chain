@@ -23,6 +23,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/kv"
 	"github.com/cosmos/cosmos-sdk/types/module"
@@ -37,11 +38,11 @@ import (
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
 	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
+	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
 	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
 	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 	ibctransfertypes "github.com/cosmos/ibc-go/v7/modules/apps/transfer/types"
-	ibchost "github.com/cosmos/ibc-go/v7/modules/core/24-host"
-	"github.com/jackalLabs/canine-chain/v5/app/simhelpers"
+	ibcexported "github.com/cosmos/ibc-go/v7/modules/core/exported"
 	minttypes "github.com/jackalLabs/canine-chain/v5/x/jklmint/types"
 	"github.com/stretchr/testify/require"
 
@@ -51,7 +52,7 @@ import (
 
 // Get flags every time the simulator is run
 func init() {
-	simapp.GetSimulatorFlags()
+	simcli.GetSimulatorFlags()
 }
 
 type StoreKeysPrefixes struct {
@@ -60,12 +61,14 @@ type StoreKeysPrefixes struct {
 	Prefixes [][]byte
 }
 
-// SetupSimulation wraps simapp.SetupSimulation in order to create any export directory if they do not exist yet
+// SetupSimulation wraps simtestutil.SetupSimulation in order to create any export directory if they do not exist yet
 func SetupSimulation(dirPrefix, dbName string) (simtypes.Config, dbm.DB, string, log.Logger, bool, error) {
 	setBech32ForTest()
 
-	simapp.FlagEnabledValue = true
-	config, db, dir, logger, skip, err := simapp.SetupSimulation(dirPrefix, dbName)
+	simcli.FlagEnabledValue = true
+	config := simcli.NewConfigFromFlags()
+	config.ChainID = "simulation-app" // parity: v0.45 helper set ChainID internally
+	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, dirPrefix, dbName, simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	config.Commit = true
 	config.Seed = rand.Int63()
 	if err != nil {
@@ -131,7 +134,7 @@ func TestAppImportExport(t *testing.T) {
 	}()
 
 	encConf := MakeEncodingConfig()
-	app := NewJackalApp(logger, db, nil, true, map[int64]bool{}, dir, simapp.FlagPeriodValue, encConf, EmptyBaseAppOptions{}, nil, fauxMerkleModeOpt)
+	app := NewJackalApp(logger, db, nil, true, map[int64]bool{}, dir, simcli.FlagPeriodValue, encConf, EmptyBaseAppOptions{}, nil, fauxMerkleModeOpt)
 	require.Equal(t, appName, app.Name())
 
 	// Run randomized simulation
@@ -141,19 +144,19 @@ func TestAppImportExport(t *testing.T) {
 		app.BaseApp,
 		AppStateFn(app.AppCodec(), app.SimulationManager()),
 		simtypes.RandomAccounts,
-		simapp.SimulationOperations(app, app.AppCodec(), config),
+		simtestutil.SimulationOperations(app, app.AppCodec(), config),
 		app.ModuleAccountAddrs(),
 		config,
 		app.AppCodec(),
 	)
 
 	// export state and simParams before the simulation error is checked
-	err = simapp.CheckExportSimulation(app, config, simParams)
+	err = simtestutil.CheckExportSimulation(app, config, simParams)
 	require.NoError(t, err)
 	require.NoError(t, simErr)
 
 	if config.Commit {
-		simapp.PrintStats(db)
+		simtestutil.PrintStats(db)
 	}
 
 	t.Log("exporting genesis...")
@@ -174,7 +177,7 @@ func TestAppImportExport(t *testing.T) {
 		newDB.Close()
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
-	newApp := NewJackalApp(logger, newDB, nil, true, map[int64]bool{}, newDir, simapp.FlagPeriodValue, encConf, EmptyBaseAppOptions{}, nil, fauxMerkleModeOpt)
+	newApp := NewJackalApp(logger, newDB, nil, true, map[int64]bool{}, newDir, simcli.FlagPeriodValue, encConf, EmptyBaseAppOptions{}, nil, fauxMerkleModeOpt)
 	require.Equal(t, appName, newApp.Name())
 
 	var genesisState GenesisState
@@ -279,8 +282,8 @@ func TestFullAppSimulation(t *testing.T) {
 		require.NoError(t, os.RemoveAll(dir))
 	}()
 	encConf := MakeEncodingConfig()
-	app := NewJackalApp(logger, db, nil, true, map[int64]bool{}, t.TempDir(), simapp.FlagPeriodValue,
-		encConf, simapp.EmptyAppOptions{}, nil, fauxMerkleModeOpt)
+	app := NewJackalApp(logger, db, nil, true, map[int64]bool{}, t.TempDir(), simcli.FlagPeriodValue,
+		encConf, simtestutil.EmptyAppOptions{}, nil, fauxMerkleModeOpt)
 	require.Equal(t, "JackalApp", app.Name())
 
 	// run randomized simulation
@@ -290,19 +293,19 @@ func TestFullAppSimulation(t *testing.T) {
 		app.BaseApp,
 		AppStateFn(app.appCodec, app.SimulationManager()),
 		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-		simapp.SimulationOperations(app, app.AppCodec(), config),
+		simtestutil.SimulationOperations(app, app.AppCodec(), config),
 		app.ModuleAccountAddrs(),
 		config,
 		app.AppCodec(),
 	)
 
 	// export state and simParams before the simulation error is checked
-	err = simapp.CheckExportSimulation(app, config, simParams)
+	err = simtestutil.CheckExportSimulation(app, config, simParams)
 	require.NoError(t, err)
 	require.NoError(t, simErr)
 
 	if config.Commit {
-		simapp.PrintStats(db)
+		simtestutil.PrintStats(db)
 	}
 }
 
@@ -316,8 +319,8 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 		require.NoError(b, os.RemoveAll(dir))
 	}()
 	encConf := MakeEncodingConfig()
-	app := NewJackalApp(logger, db, nil, true, map[int64]bool{}, b.TempDir(), simapp.FlagPeriodValue,
-		encConf, simapp.EmptyAppOptions{}, nil, fauxMerkleModeOpt)
+	app := NewJackalApp(logger, db, nil, true, map[int64]bool{}, b.TempDir(), simcli.FlagPeriodValue,
+		encConf, simtestutil.EmptyAppOptions{}, nil, fauxMerkleModeOpt)
 	require.Equal(b, "JackalApp", app.Name())
 
 	// run randomized simulation
@@ -327,19 +330,19 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 		app.BaseApp,
 		AppStateFn(app.appCodec, app.SimulationManager()),
 		simtypes.RandomAccounts, // Replace with own random account function if using keys other than secp256k1
-		simapp.SimulationOperations(app, app.AppCodec(), config),
+		simtestutil.SimulationOperations(app, app.AppCodec(), config),
 		app.ModuleAccountAddrs(),
 		config,
 		app.AppCodec(),
 	)
 
 	// export state and simParams before the simulation error is checked
-	err = simapp.CheckExportSimulation(app, config, simParams)
+	err = simtestutil.CheckExportSimulation(app, config, simParams)
 	require.NoError(b, err)
 	require.NoError(b, simErr)
 
 	if config.Commit {
-		simapp.PrintStats(db)
+		simtestutil.PrintStats(db)
 	}
 }
 
@@ -347,11 +350,9 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 // It panics if the user provides files for both of them.
 // If a file is not given for the genesis or the sim params, it creates a randomized one.
 func AppStateFn(codec codec.Codec, manager *module.SimulationManager) simtypes.AppStateFn {
-	// quick hack to setup app state genesis with our app modules
-	simapp.ModuleBasics = ModuleBasics
-	if simapp.FlagGenesisTimeValue == 0 { // always set to have a block time
-		simapp.FlagGenesisTimeValue = time.Now().Unix()
+	if simcli.FlagGenesisTimeValue == 0 { // always set to have a block time
+		simcli.FlagGenesisTimeValue = time.Now().Unix()
 	}
 
-	return simapp.AppStateFn(codec, manager)
+	return simtestutil.AppStateFn(codec, manager, ModuleBasics.DefaultGenesis(codec))
 }
