@@ -347,7 +347,7 @@ func NewJackalApp(
 		feegrant.StoreKey, authzkeeper.StoreKey, wasm.StoreKey, rnsmoduletypes.StoreKey,
 		storagemoduletypes.StoreKey, filetreemoduletypes.StoreKey, oraclemoduletypes.StoreKey,
 		notificationsmoduletypes.StoreKey, ibcfeetypes.StoreKey, icacontrollertypes.StoreKey,
-		icahosttypes.StoreKey,
+		icahosttypes.StoreKey, crisistypes.StoreKey,
 
 		/*
 			, dsigmoduletypes.StoreKey,
