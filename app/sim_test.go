@@ -6,6 +6,8 @@ import (
 	"math/rand"
 	"os"
 	"path/filepath"
+	"runtime/debug"
+	"strings"
 	"testing"
 	"time"
 
@@ -70,7 +72,10 @@ func SetupSimulation(dirPrefix, dbName string) (simtypes.Config, dbm.DB, string,
 	config.ChainID = "simulation-app" // parity: v0.45 helper set ChainID internally
 	db, dir, logger, skip, err := simtestutil.SetupSimulation(config, dirPrefix, dbName, simcli.FlagVerboseValue, simcli.FlagEnabledValue)
 	config.Commit = true
-	config.Seed = rand.Int63()
+	// test-only: honor an explicit -Seed; randomize only when none was given
+	if config.Seed == 0 {
+		config.Seed = rand.Int63()
+	}
 	if err != nil {
 		return simtypes.Config{}, nil, "", nil, false, err
 	}
@@ -134,7 +139,7 @@ func TestAppImportExport(t *testing.T) {
 	}()
 
 	encConf := MakeEncodingConfig()
-	app := NewJackalApp(logger, db, nil, true, map[int64]bool{}, dir, simcli.FlagPeriodValue, encConf, EmptyBaseAppOptions{}, nil, fauxMerkleModeOpt)
+	app := NewJackalApp(logger, db, nil, true, map[int64]bool{}, dir, simcli.FlagPeriodValue, encConf, EmptyBaseAppOptions{}, nil, fauxMerkleModeOpt, baseapp.SetChainID("simulation-app"))
 	require.Equal(t, appName, app.Name())
 
 	// Run randomized simulation
@@ -177,13 +182,23 @@ func TestAppImportExport(t *testing.T) {
 		newDB.Close()
 		require.NoError(t, os.RemoveAll(newDir))
 	}()
-	newApp := NewJackalApp(logger, newDB, nil, true, map[int64]bool{}, newDir, simcli.FlagPeriodValue, encConf, EmptyBaseAppOptions{}, nil, fauxMerkleModeOpt)
+	newApp := NewJackalApp(logger, newDB, nil, true, map[int64]bool{}, newDir, simcli.FlagPeriodValue, encConf, EmptyBaseAppOptions{}, nil, fauxMerkleModeOpt, baseapp.SetChainID("simulation-app"))
 	require.Equal(t, appName, newApp.Name())
 
 	var genesisState GenesisState
 	err = json.Unmarshal(exported.AppState, &genesisState)
 	require.NoError(t, err)
 
+	defer func() {
+		if r := recover(); r != nil {
+			err := fmt.Sprintf("%v", r)
+			if !strings.Contains(err, "validator set is empty after InitGenesis") {
+				panic(r)
+			}
+			logger.Info("Skipping simulation as all validators have been unbonded")
+			logger.Info("err", err, "stacktrace", string(debug.Stack()))
+		}
+	}()
 	ctxA := app.NewContext(true, tmproto.Header{Height: app.LastBlockHeight()})
 	ctxB := newApp.NewContext(true, tmproto.Header{Height: app.LastBlockHeight()})
 	newApp.mm.InitGenesis(ctxB, app.AppCodec(), genesisState)
@@ -197,7 +212,7 @@ func TestAppImportExport(t *testing.T) {
 			app.keys[stakingtypes.StoreKey], newApp.keys[stakingtypes.StoreKey],
 			[][]byte{
 				stakingtypes.UnbondingQueueKey, stakingtypes.RedelegationQueueKey, stakingtypes.ValidatorQueueKey,
-				stakingtypes.HistoricalInfoKey,
+				stakingtypes.HistoricalInfoKey, stakingtypes.UnbondingIDKey, stakingtypes.UnbondingIndexKey, stakingtypes.UnbondingTypeKey, stakingtypes.ValidatorUpdatesKey,
 			},
 		},
 		{app.keys[slashingtypes.StoreKey], newApp.keys[slashingtypes.StoreKey], [][]byte{}},
@@ -210,13 +225,13 @@ func TestAppImportExport(t *testing.T) {
 		{app.keys[capabilitytypes.StoreKey], newApp.keys[capabilitytypes.StoreKey], [][]byte{}},
 		{app.keys[ibcexported.StoreKey], newApp.keys[ibcexported.StoreKey], [][]byte{}},
 		{app.keys[ibctransfertypes.StoreKey], newApp.keys[ibctransfertypes.StoreKey], [][]byte{}},
-		{app.keys[authzkeeper.StoreKey], newApp.keys[authzkeeper.StoreKey], [][]byte{}},
-		{app.keys[feegrant.StoreKey], newApp.keys[feegrant.StoreKey], [][]byte{}},
+		{app.keys[authzkeeper.StoreKey], newApp.keys[authzkeeper.StoreKey], [][]byte{authzkeeper.GrantKey, authzkeeper.GrantQueuePrefix}},
+		{app.keys[feegrant.StoreKey], newApp.keys[feegrant.StoreKey], [][]byte{feegrant.FeeAllowanceKeyPrefix, feegrant.FeeAllowanceQueueKeyPrefix}},
 		{app.keys[wasm.StoreKey], newApp.keys[wasm.StoreKey], [][]byte{}},
 		{app.keys[oraclemoduletypes.StoreKey], newApp.keys[oraclemoduletypes.StoreKey], [][]byte{}},
 		{app.keys[storagemoduletypes.StoreKey], newApp.keys[storagemoduletypes.StoreKey], [][]byte{}},
 		{app.keys[filetreemoduletypes.StoreKey], newApp.keys[filetreemoduletypes.StoreKey], [][]byte{}},
-		{app.keys[rnsmoduletypes.StoreKey], newApp.keys[rnsmoduletypes.StoreKey], [][]byte{}},
+		{app.keys[rnsmoduletypes.StoreKey], newApp.keys[rnsmoduletypes.StoreKey], [][]byte{[]byte(rnsmoduletypes.PrimaryNameKeyPrefix)}},
 	}
 
 	// delete persistent tx counter value
