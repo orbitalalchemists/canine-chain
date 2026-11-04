@@ -8,6 +8,7 @@ import "canine_chain/rns/names.proto";
 import "canine_chain/rns/bids.proto";
 import "canine_chain/rns/forsale.proto";
 import "canine_chain/rns/init.proto";
+import "canine_chain/rns/primary_name.proto";
 
 option go_package = "github.com/jackalLabs/canine-chain/x/rns/types";
 
@@ -18,4 +19,5 @@ message GenesisState {
   repeated Bids bids_list = 4 [ (gogoproto.nullable) = false ];
   repeated Forsale for_sale_list = 5 [ (gogoproto.nullable) = false ];
   repeated Init init_list = 6 [ (gogoproto.nullable) = false ];
+  repeated PrimaryNames primary_names_list = 7 [ (gogoproto.nullable) = false ];
 }

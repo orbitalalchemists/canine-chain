@@ -127,6 +127,32 @@ func (k Keeper) GetAllNames(ctx sdk.Context) (list []types.Names) {
 	return list
 }
 
+// GetAllPrimaryNames returns all primary names
+func (k Keeper) GetAllPrimaryNames(ctx sdk.Context) (list []types.PrimaryNames) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PrimaryNameKeyPrefix))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		owner := strings.TrimSuffix(string(iterator.Key()), "/")
+		raw := string(iterator.Value())
+
+		dot := strings.LastIndex(raw, ".")
+		if dot <= 0 || dot == len(raw)-1 {
+			continue
+		}
+
+		list = append(list, types.PrimaryNames{
+			Owner: owner,
+			Name:  raw[:dot],
+			Tld:   raw[dot+1:],
+		})
+	}
+
+	return list
+}
+
 // CheckExistence quickly checks if there are any domains registered
 func (k Keeper) CheckExistence(ctx sdk.Context) bool {
 	// initializing the iterator

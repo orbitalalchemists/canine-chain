@@ -29,6 +29,10 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, elem := range genState.InitList {
 		k.SetInit(ctx, elem)
 	}
+	// Set all the primary names
+	for _, elem := range genState.PrimaryNamesList {
+		k.SetPrimaryName(ctx, elem.Owner, elem.Name, elem.Tld)
+	}
 	k.SetParams(ctx, genState.Params)
 }
 
@@ -42,6 +46,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.BidsList = k.GetAllBids(ctx)
 	genesis.ForSaleList = k.GetAllForsale(ctx)
 	genesis.InitList = k.GetAllInit(ctx)
+	genesis.PrimaryNamesList = k.GetAllPrimaryNames(ctx)
 
 	return genesis
 }

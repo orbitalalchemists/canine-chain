@@ -10,12 +10,13 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default Capability genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		WhoIsList:   []Whois{},
-		NamesList:   []Names{},
-		BidsList:    []Bids{},
-		ForSaleList: []Forsale{},
-		InitList:    []Init{},
-		Params:      DefaultParams(),
+		WhoIsList:        []Whois{},
+		NamesList:        []Names{},
+		BidsList:         []Bids{},
+		ForSaleList:      []Forsale{},
+		InitList:         []Init{},
+		PrimaryNamesList: []PrimaryNames{},
+		Params:           DefaultParams(),
 	}
 }
 
@@ -73,5 +74,15 @@ func (gs GenesisState) Validate() error {
 		initIndexMap[index] = struct{}{}
 	}
 
+	// Check for duplicated index in primary names
+	primaryNamesIndexMap := make(map[string]struct{})
+
+	for _, elem := range gs.PrimaryNamesList {
+		index := elem.Owner
+		if _, ok := primaryNamesIndexMap[index]; ok {
+			return fmt.Errorf("duplicated index for primary names")
+		}
+		primaryNamesIndexMap[index] = struct{}{}
+	}
 	return gs.Params.Validate()
 }
