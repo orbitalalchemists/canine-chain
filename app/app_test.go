@@ -11,9 +11,15 @@ import (
 
 	abci "github.com/cometbft/cometbft/abci/types"
 
+	"cosmossdk.io/math"
 	"github.com/CosmWasm/wasmd/x/wasm"
 	wasmtypes "github.com/CosmWasm/wasmd/x/wasm/types"
+	codectypes "github.com/cosmos/cosmos-sdk/codec/types"
+	"github.com/cosmos/cosmos-sdk/crypto/keys/ed25519"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 var emptyWasmOpts []wasm.Option
@@ -34,6 +40,44 @@ func TestWasmdExport(t *testing.T) {
 	gapp := NewJackalApp(log.NewTMLogger(log.NewSyncWriter(os.Stdout)), db, nil, true, map[int64]bool{}, DefaultNodeHome, 0, MakeEncodingConfig(), EmptyBaseAppOptions{}, emptyWasmOpts)
 
 	genesisState := NewDefaultGenesisState()
+	// WO-75 test scaffolding: seed one bonded dummy validator (test genesis only),
+	// reusing the WO-69 pattern (c707d002) -> v0.47 panics on an empty validator
+	// set after InitGenesis.
+	bondAmt := sdk.TokensFromConsensusPower(100, sdk.DefaultPowerReduction)
+	privKey := ed25519.GenPrivKeyFromSecret([]byte("wo75-dummy-validator"))
+	pubKeyAny, err := codectypes.NewAnyWithValue(privKey.PubKey())
+	if err != nil {
+		panic(err)
+	}
+	appCodec := gapp.AppCodec()
+
+	var stakingGen stakingtypes.GenesisState
+	appCodec.MustUnmarshalJSON(genesisState[stakingtypes.ModuleName], &stakingGen)
+	bondDenom := stakingGen.Params.BondDenom
+	valAddr := sdk.ValAddress(privKey.PubKey().Address()).String()
+	stakingGen.Validators = append(stakingGen.Validators, stakingtypes.Validator{
+		OperatorAddress: valAddr,
+		ConsensusPubkey: pubKeyAny,
+		Status:          stakingtypes.Bonded,
+		Tokens:          bondAmt,
+		DelegatorShares: math.LegacyOneDec(),
+	})
+	stakingGen.Delegations = append(stakingGen.Delegations, stakingtypes.Delegation{
+		DelegatorAddress: sdk.AccAddress(privKey.PubKey().Address()).String(),
+		ValidatorAddress: valAddr,
+		Shares:           math.LegacyOneDec(),
+	})
+	genesisState[stakingtypes.ModuleName] = appCodec.MustMarshalJSON(&stakingGen)
+
+	var bankGen banktypes.GenesisState
+	appCodec.MustUnmarshalJSON(genesisState[banktypes.ModuleName], &bankGen)
+	bankGen.Balances = append(bankGen.Balances, banktypes.Balance{
+		Address: authtypes.NewModuleAddress(stakingtypes.BondedPoolName).String(),
+		Coins:   sdk.NewCoins(sdk.NewCoin(bondDenom, bondAmt)),
+	})
+	bankGen.Balances = banktypes.SanitizeGenesisBalances(bankGen.Balances)
+	bankGen.Supply = bankGen.Supply.Add(sdk.NewCoin(bondDenom, bondAmt))
+	genesisState[banktypes.ModuleName] = appCodec.MustMarshalJSON(&bankGen)
 	stateBytes, err := json.MarshalIndent(genesisState, "", "  ")
 	require.NoError(t, err)
 
