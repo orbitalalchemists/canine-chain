@@ -338,17 +338,28 @@ func TestSpaceUsedAsymmetry_Finding10(t *testing.T) {
 }
 
 // TestOverflow_Finding3 demonstrates Finding #3: FileSize*MaxProofs wraps.
+//
+// WO-71 (2026-11-04): the original upstream v5.1.2 assertion (kept as comments in
+// the body) expected the Case A product to wrap NEGATIVE, but 1<<40 * 1<<25 = 2^65
+// and 2^65 mod 2^64 == 0, so int64 wrapping yields exactly 0 on every Go version
+// and platform. The assertion never touched keeper code and was byte-identical to
+// upstream v5.1.2, so it could never detect v0.45->v0.47 port drift: it was
+// structurally unsatisfiable. Corrected below to assert the true wrap signature.
 func TestOverflow_Finding3(t *testing.T) {
 	// Two representative cases the keeper does not bound-check today.
-	// Case A: size fits, but size*maxProofs overflows to negative.
+	// Case A: size fits, but size*maxProofs overflows: the int64 wrap lands on 0 (WO-71).
 	var fileSize int64 = 1 << 40 // ~1 TiB
 	var maxProofs int64 = 1 << 25
 	product := fileSize * maxProofs
 	t.Logf("FINDING #3 case A: %d * %d = %d (negative=%v)",
 		fileSize, maxProofs, product, product < 0)
-	if product >= 0 {
-		t.Fatal("expected product to overflow to negative")
+	// if product >= 0 {
+	// t.Fatal("expected product to overflow to negative")
+	// WO-71 corrected assertion: the true wrap signature of 2^65 in int64 is exactly 0.
+	if product != 0 {
+		t.Fatal("expected product to wrap to 0 (2^65 mod 2^64 == 0); got nonzero")
 	}
+	// }
 
 	// Case B: overflow wraps back to small positive → bypass min-size guard.
 	fileSize = 1 << 50
