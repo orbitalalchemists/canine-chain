@@ -298,7 +298,7 @@ func TestFullAppSimulation(t *testing.T) {
 	}()
 	encConf := MakeEncodingConfig()
 	app := NewJackalApp(logger, db, nil, true, map[int64]bool{}, t.TempDir(), simcli.FlagPeriodValue,
-		encConf, simtestutil.EmptyAppOptions{}, nil, fauxMerkleModeOpt)
+		encConf, simtestutil.EmptyAppOptions{}, nil, fauxMerkleModeOpt, baseapp.SetChainID("simulation-app"))
 	require.Equal(t, "JackalApp", app.Name())
 
 	// run randomized simulation
@@ -335,7 +335,7 @@ func BenchmarkFullAppSimulation(b *testing.B) {
 	}()
 	encConf := MakeEncodingConfig()
 	app := NewJackalApp(logger, db, nil, true, map[int64]bool{}, b.TempDir(), simcli.FlagPeriodValue,
-		encConf, simtestutil.EmptyAppOptions{}, nil, fauxMerkleModeOpt)
+		encConf, simtestutil.EmptyAppOptions{}, nil, fauxMerkleModeOpt, baseapp.SetChainID("simulation-app"))
 	require.Equal(b, "JackalApp", app.Name())
 
 	// run randomized simulation
