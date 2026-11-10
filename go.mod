@@ -43,6 +43,7 @@ require (
 )
 
 require (
+	cosmossdk.io/math v1.2.0
 	github.com/cosmos/interchain-accounts v0.2.6
 	github.com/golang/mock v1.6.0
 	github.com/zeebo/blake3 v0.2.4
@@ -57,7 +58,6 @@ require (
 	cloud.google.com/go/storage v1.30.1 // indirect
 	cosmossdk.io/errors v1.0.1 // indirect
 	cosmossdk.io/log v1.3.0 // indirect
-	cosmossdk.io/math v1.2.0 // indirect
 	cosmossdk.io/tools/rosetta v0.2.1 // indirect
 	github.com/aws/aws-sdk-go v1.44.203 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
@@ -217,3 +217,5 @@ replace (
 	github.com/wealdtech/go-merkletree/v2 => github.com/TheMarstonConnell/go-merkletree/v2 v2.0.0-20250829184252-ad65f46fbd22
 
 )
+
+replace github.com/cosmos/iavl => /home/simon/oa-jackal-homes/oa-68-stageB/iavl-cure
