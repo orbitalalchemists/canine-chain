@@ -708,7 +708,7 @@ func NewJackalApp(
 		distr.NewAppModule(appCodec, app.distrKeeper, app.AccountKeeper, app.BankKeeper, app.stakingKeeper, app.getSubspace(distrtypes.ModuleName)),
 		staking.NewAppModule(appCodec, app.stakingKeeper, app.AccountKeeper, app.BankKeeper, app.getSubspace(stakingtypes.ModuleName)),
 		upgrade.NewAppModule(app.upgradeKeeper),
-		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.stakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.getSubspace(wasm.ModuleName).WithKeyTable(wasmv2.ParamKeyTable())),
+		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.stakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.getSubspace(wasm.ModuleName)),
 		evidence.NewAppModule(app.evidenceKeeper),
 		feegrantmodule.NewAppModule(appCodec, app.AccountKeeper, app.BankKeeper, app.feeGrantKeeper, app.InterfaceRegistry),
 		authzmodule.NewAppModule(appCodec, app.authzKeeper, app.AccountKeeper, app.BankKeeper, app.InterfaceRegistry),
@@ -946,7 +946,7 @@ func NewJackalApp(
 		slashing.NewAppModule(appCodec, app.slashingKeeper, app.AccountKeeper, app.BankKeeper, app.stakingKeeper, app.getSubspace(slashingtypes.ModuleName)),
 		params.NewAppModule(app.paramsKeeper),
 		evidence.NewAppModule(app.evidenceKeeper),
-		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.stakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.getSubspace(wasm.ModuleName).WithKeyTable(wasmv2.ParamKeyTable())),
+		wasm.NewAppModule(appCodec, &app.wasmKeeper, app.stakingKeeper, app.AccountKeeper, app.BankKeeper, app.MsgServiceRouter(), app.getSubspace(wasm.ModuleName)),
 		ibc.NewAppModule(app.ibcKeeper),
 		transferModule,
 		rnsModule,
@@ -1159,7 +1159,7 @@ func initParamsKeeper(appCodec codec.BinaryCodec, legacyAmino *codec.LegacyAmino
 	paramsKeeper.Subspace(storagemoduletypes.ModuleName)
 	paramsKeeper.Subspace(filetreemoduletypes.ModuleName)
 	paramsKeeper.Subspace(notificationsmoduletypes.ModuleName)
-	paramsKeeper.Subspace(wasm.ModuleName)
+	paramsKeeper.Subspace(wasm.ModuleName).WithKeyTable(wasmv2.ParamKeyTable())
 
 	return paramsKeeper
 }
