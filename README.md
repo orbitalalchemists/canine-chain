@@ -2,9 +2,13 @@
 # Canine Chain
 **Canine Chain** is a core component to the Jackal Protocol, a distributed cloud storage platform running on blockchain rails. This component is the replicated state machine that manages storage deals, payments and data-permissions. It is built using the Cosmos-SDK and CometBFT (formerly Tendermint).
 
-[![golangci-lint](https://github.com/JackalLabs/canine-chain/actions/workflows/golangci.yml/badge.svg)](https://github.com/JackalLabs/canine-chain/actions/workflows/golangci.yml)
-[![Test](https://github.com/JackalLabs/canine-chain/actions/workflows/test-unit.yml/badge.svg)](https://github.com/JackalLabs/canine-chain/actions/workflows/test-unit.yml)
-[![Build](https://github.com/JackalLabs/canine-chain/actions/workflows/build.yml/badge.svg)](https://github.com/JackalLabs/canine-chain/actions/workflows/build.yml)
+> **About this repository:** this is the Orbital Alchemists validator port of
+> [JackalLabs/canine-chain](https://github.com/JackalLabs/canine-chain), based on
+> upstream tag `v5.1.2`, carrying our Cosmos SDK v0.47 bridge-upgrade work on the
+> `oa-stageB-part2` branch. Upstream history is preserved unchanged; the Jackal
+> Protocol itself remains Jackal Labs' project. Building from this repository
+> resolves our published IAVL cure fork (`orbitalalchemists/iavl-cure`), already
+> pinned in `go.mod`.
 
 ## Wiki Pages
 
@@ -15,7 +19,7 @@
 
 ## Installing the Canine CLI
 ### Prerequisites
-* Install GoLang 1.21 [here](https://go.dev/dl/)
+* Install Go 1.23 [here](https://go.dev/dl/)
 * Install build essentials (GNU Make)
 
 ### Installing
@@ -24,34 +28,16 @@
 To install `canined` on your Linux machine:
 
 ```shell
-git clone https://github.com/JackalLabs/canine-chain.git
+git clone https://github.com/orbitalalchemists/canine-chain.git
 cd canine-chain
 make install
 ```
-
-### Pre-built Binary
-[Releases](https://github.com/jackalLabs/canine-chain-chain/releases) and download the latest release. Move the executable to a folder in your `$PATH` and download [this](https://github.com/CosmWasm/wasmvm/raw/v1.2.6/internal/api/libwasmvm.x86_64.so) to `/lib/libwasmvm.x86_64.so` 
-
-```sh
-sudo wget https://github.com/CosmWasm/wasmvm/raw/v1.2.6/internal/api/libwasmvm.x86_64.so -O /lib/libwasmvm.x86_64.so
-```
-
-You may also need to run `sudo chmod +x canined` inside the executables directory to allow it to run.
 
 ## Testing this chain
 
 ```shell
 make test
 ```
-
-## Version Map
-
-When Syncing, you **MUST** use the flag `--unsafe-skip-upgrades 118040` after `canined start` or else you will crash at height 118040.
-
-|block height|canined version|
-|------------|---------------|
-|45381       |1.1.2          |
-|0           |1.1.0          |
 
 ## License
 
@@ -62,4 +48,3 @@ Canine by Jackal uses the [MIT License](/LICENSE.md).
 Refer to the bug bounty program proposed by Jackal Labs [Here](https://jackaldao.medium.com/announcement-jackal-bug-bounty-program-31d4e03ab7e2)
 
 ### [Developer Contact](/ABOUT.md)
-
