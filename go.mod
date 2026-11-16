@@ -18,7 +18,7 @@ require (
 	github.com/rs/cors v1.8.3 // indirect
 	github.com/spf13/cast v1.5.1
 	github.com/spf13/cobra v1.7.0
-	github.com/spf13/pflag v1.0.5
+	github.com/spf13/pflag v1.1.0
 	github.com/stretchr/testify v1.9.0
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
 	github.com/zondax/hid v0.9.2 // indirect
@@ -215,7 +215,6 @@ replace (
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 	github.com/wealdtech/go-merkletree/v2 => github.com/TheMarstonConnell/go-merkletree/v2 v2.0.0-20250829184252-ad65f46fbd22
-
 )
 
 replace github.com/cosmos/iavl => github.com/orbitalalchemists/iavl-cure v0.20.1-cure.0
