@@ -218,4 +218,4 @@ replace (
 
 )
 
-replace github.com/cosmos/iavl => /home/simon/oa-jackal-homes/oa-68-stageB/iavl-cure
+replace github.com/cosmos/iavl => github.com/orbitalalchemists/iavl-cure v0.20.1-cure.0
