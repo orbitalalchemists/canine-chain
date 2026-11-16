@@ -44,7 +44,7 @@ require (
 
 require (
 	cosmossdk.io/math v1.2.0
-	github.com/cosmos/interchain-accounts v0.2.6
+	github.com/cosmos/interchain-accounts v0.5.1
 	github.com/golang/mock v1.6.0
 	github.com/zeebo/blake3 v0.2.4
 	google.golang.org/genproto/googleapis/api v0.0.0-20231212172506-995d672761c0
@@ -215,7 +215,6 @@ replace (
 	github.com/gogo/protobuf => github.com/regen-network/protobuf v1.3.3-alpha.regen.1
 
 	github.com/wealdtech/go-merkletree/v2 => github.com/TheMarstonConnell/go-merkletree/v2 v2.0.0-20250829184252-ad65f46fbd22
-
 )
 
 replace github.com/cosmos/iavl => github.com/orbitalalchemists/iavl-cure v0.20.1-cure.0
